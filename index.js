@@ -1,5 +1,5 @@
 var request = require("request");
-var mqtt
+var mqtt = require("mqtt");
 
 var Service, Characteristic;
 
@@ -13,20 +13,18 @@ function GarageDoorAccessory(log, config) {
   this.log = log;
 
   // url info
-  this.url         = config["url"];
-  this.ip_address  = config["ip_address"];
-  this.api_key     = config["api_key"];
-  this.password    = config["password"];
-  this.name        = config["name"];
-  this.zway_device_id = config["zway_device_id"]; //For the status
-  this.session_cookie = config["session_cookie"]; //For the status
+//  this.url         = config["url"];
+//  this.ip_address  = config["ip_address"];
+//  this.api_key     = config["api_key"];
+//  this.password    = config["password"];
+//  this.name        = config["name"];
 }
 
 GarageDoorAccessory.prototype = {
   getDoorTargetPositionState: function(callback) {
     this.log("getDoorTargetPositionState");
 
-    local_callback( null, Characteristic.CurrentDoorState.CLOSED );
+    callback( null, Characteristic.CurrentDoorState.CLOSED );
   },
 
 // DO callback here when the MQTT value changes
@@ -37,9 +35,9 @@ GarageDoorAccessory.prototype = {
         level = "on"; // REPLACE with correct MQTT
 
         if (level == "on") {
-          local_callback( null, Characteristic.CurrentDoorState.OPEN );
+          callback( null, Characteristic.CurrentDoorState.OPEN );
         }else{
-          local_callback( null, Characteristic.CurrentDoorState.CLOSED );
+          callback( null, Characteristic.CurrentDoorState.CLOSED );
         }
       });
     });
