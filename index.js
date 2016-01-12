@@ -1,5 +1,5 @@
 var request = require("request");
-var mqtt = require("mqtt");
+//var mqtt = require("mqtt");
 
 var Service, Characteristic;
 
