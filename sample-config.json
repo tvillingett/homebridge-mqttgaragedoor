@@ -1,0 +1,28 @@
+{
+    "bridge": {
+        "name": "Homebridge",
+        "username": "CC:22:3D:E3:CE:30",
+        "port": 51826,
+        "pin": "031-45-154"
+    },
+    
+    "description": "This is an example configuration file for garage door",
+
+    "platforms": [
+    ],
+    "accessories": [
+    	{
+        	"accessory": "mqttswitch",
+            "name": "PUT THE NAME OF YOUR GARAGE DOOR OPENER HERE",
+            "url": "PUT URL OF THE BROKER HERE",
+			"username": "PUT USERNAME OF THE BROKER HERE (OR EMPTY)",
+            "password": "PUT PASSWORD OF THE BROKER HERE  (OR EMPTY)",
+ 			"caption": "PUT THE LABEL OF YOUR GARAGE DOOR OPENER HERE",
+ 			"topics": {
+ 				"statusGet": "PUT THE MQTT TOPIC FOR THE GETTING THE STATUS OF YOUR DOOR HERE",
+ 				"statusSet": "PUT THE MQTT TOPIC FOR THE SETTING THE TARGET STATE OF YOUR DOOR HERE"
+ 				"obstructionGet": "PUT THE MQTT TOPIC FOR THE GETTING THE OBSTRUCT DETECTION OF YOUR DOOR HERE"
+ 			}
+    	}
+    ]
+}
