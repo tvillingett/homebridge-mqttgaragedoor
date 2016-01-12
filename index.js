@@ -6,7 +6,7 @@ var Service, Characteristic;
 module.exports = function(homebridge){
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-  homebridge.registerAccessory("homebridge-mqtt-garage-door", "GarageDoor", GarageDoorAccessory);
+  homebridge.registerAccessory("homebridge-mqtt-garage-door", "MQTTGarageDoor", GarageDoorAccessory);
 }
 
 function GarageDoorAccessory(log, config) {
