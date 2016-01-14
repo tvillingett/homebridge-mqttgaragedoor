@@ -10,16 +10,15 @@
 
 	"platforms": [],
 	"accessories": [{
-		"accessory": "MQTTGarageDoor",
+		"accessory": "Mqttgarage",
 		"name": "Garageöppnare",
 		"url": "mqtt://127.0.0.1",
 		"username": "",
 		"password": "",
 		"caption": "Garageport",
 		"topics": {
-			"statusGet": "garage/CurrentDoorState",
-			"statusSet": "garage/TargetDoorState",
-			"obstructionGet": "garage/ObstructionDetected"
+			"statusCurrent": "garage/CurrentDoorState",
+			"statusTarget": "garage/TargetDoorState"
 		}
 	}]
 }
