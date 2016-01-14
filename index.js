@@ -1,4 +1,4 @@
-// MQTT Switch Accessory plugin for HomeBridge
+// MQTT Garage Accessory plugin for HomeBridge
 //
 // Remember to add accessory to config.json. Example:
 // "accessories": [
@@ -10,8 +10,8 @@
 //            "password": "PUT PASSWORD OF THE BROKER HERE"
 // 			  "caption": "PUT THE LABEL OF YOUR SWITCH HERE",
 // 			  "topics": {
-// 				"statusGet": 	"PUT THE MQTT TOPIC FOR THE GETTING THE STATUS OF YOUR SWITCH HERE",
-// 				"statusSet": 	"PUT THE MQTT TOPIC FOR THE SETTING THE STATUS OF YOUR SWITCH HERE"
+// 				"statusCurrent": 	"PUT THE MQTT TOPIC FOR THE GETTING THE STATUS OF YOUR SWITCH HERE",
+// 				"statusTarget": 	"PUT THE MQTT TOPIC FOR THE SETTING THE STATUS OF YOUR SWITCH HERE"
 // 			  }
 //     }
 // ],
@@ -23,7 +23,6 @@
 
 var Service, Characteristic;
 var mqtt = require("mqtt");
-
 
 function MqttGarageAccessory(log, config) {
   	this.log          	= log;
@@ -49,19 +48,13 @@ function MqttGarageAccessory(log, config) {
     	rejectUnauthorized: false
 	};
 	this.caption		= config["caption"];
-	this.topicStatusGet	= config["topics"].statusGet; // the target value sent to HomeKit
-	this.topicStatusSet	= config["topics"].statusSet; // the target value for door state
+	this.topicStatusCurrent	= config["topics"].statusCurrent; // the target value sent to HomeKit
+	this.topicStatusTarget	= config["topics"].statusTarget; // the actual value for door state
 
-	this.CachedGarageDoorState = Characteristic.CurrentDoorState.CLOSED; // 1 = closed
-	this.CachedGarageTargetDoorState = Characteristic.CurrentDoorState.CLOSED; // 1 = closed   
+	this.CachedGarageDoorState = null; // Characteristic.CurrentDoorState.CLOSED; // 1 = closed
+	this.CachedGarageTargetDoorState = null; //Characteristic.CurrentDoorState.CLOSED; // 1 = closed   
     
 	this.service = new Service.GarageDoorOpener(this.name);
-
-    /*   	this.service
-    	.getCharacteristic(Characteristic.On)
-    	.on('get', this.getStatus.bind(this))
-    	.on('set', this.setStatus.bind(this));
-    */
     
     this.service.getCharacteristic( Characteristic.CurrentDoorState ).on(    'get', this.getDoorPositionState.bind(this) );
     this.service.getCharacteristic( Characteristic.TargetDoorState ).on(     'get', this.getDoorTargetPositionState.bind(this) );
@@ -77,13 +70,21 @@ function MqttGarageAccessory(log, config) {
 
 	this.client.on('message', function (topic, message) {
         that.log( "Got MQTT! garage" );
-		if (topic == that.topicStatusGet) {
-			var status = message.toString();
+		if (topic == that.topicStatusCurrent) { // actual value changed
+			var status = parseInt(message);
 			that.CachedGarageDoorState = status;
-		   	that.service.getCharacteristic(Characteristic.CurrentDoorState).setValue(that.CachedGarageDoorState, undefined, 'fromSetValue');
+            that.service.getCharacteristic(Characteristic.CurrentDoorState).setValue(status, undefined, 'fromSetValue');
+            }
+        if (topic == that.topicStatusTarget) { // target value changed
+			var status = parseInt(message);
+            if (that.CachedGarageTargetDoorState != status) { // avoid loopback from own changes
+			that.CachedGarageTargetDoorState = status;
+            that.service.getCharacteristic(Characteristic.TargetDoorState).setValue(status, undefined, 'fromSetValue');
+            }
 		}
 	});
-    this.client.subscribe(this.topicStatusGet);
+    this.client.subscribe(this.topicStatusCurrent);
+    this.client.subscribe(this.topicStatusTarget);
 }
 
 module.exports = function(homebridge) {
@@ -106,7 +107,7 @@ MqttGarageAccessory.prototype.getDoorTargetPositionState = function(callback) {
 MqttGarageAccessory.prototype.setDoorTargetPosition = function(status, callback, context) {
     this.log("setDoorTargetPosition");
     this.CachedGarageTargetDoorState = status;
-	this.client.publish(this.topicStatusSet, String(status) ); // send MQTT packet for new state
+	this.client.publish(this.topicStatusTarget, String(status) ); // send MQTT packet for new state
 	callback();
 }
 
