@@ -1,6 +1,6 @@
 {
   "name": "homebridge-mqttgaragedoor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Homebridge plugin for MQTT garagedoor opener",
   "note": "peerDependencies is hardcoded to peerDepdendencies in homebridge!!!",
   "main": "index.js",
@@ -27,7 +27,7 @@
   "dependencies": {
     "mqtt": "^1.6.3"
   },
-  "author": "tvillingett",
+  "author": "Anders Eriksson",
   "license": "GPL2",
   "bugs": {
     "url": "https://github.com/tvillingett/homebridge-mqttgaragedoor/issues"
